@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Каталог специалистов - Центр коррекции и развития</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: #fff;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        nav ul {
+            padding: 0;
+            list-style-type: none;
+            margin: 20px 0;
+        }
+
+        nav ul li {
+            display: inline;
+            margin: 0 20px;
+        }
+
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        nav ul li a:hover {
+            color: #ffd700;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .specialist-card {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .specialist-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .specialist-card h2 {
+            color: #ffd700;
+            margin-top: 0;
+        }
+
+        .price {
+            font-weight: bold;
+            color: #4caf50;
+        }
+
+        #adminPanel {
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .delete-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .delete-btn:hover {
+            background: #cc0000;
+            transform: scale(1.05);
+        }
+
+        .appointment-btn {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .appointment-btn:hover {
+            background: #45a049;
+            transform: scale(1.05);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: relative;
+            background: #1a1a2e;
+            margin: 15% auto;
+            padding: 20px;
+            width: 70%;
+            max-width: 400px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .close-btn {
+            position: absolute;
+            right: 15px;
+            top: 10px;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Наши специалисты</h1>
+        <nav>
+            <ul>
+                <li><a href="main.html">Главная</a></li>
+                <li><a href="о нас.html">О нас</a></li>
+                <li><a href="контакты.html">Контакты</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div id="specialistContainer"></div>
+        
+        <div id="adminPanel">
+            <h2>Панель администратора</h2>
+            <input type="text" id="newSpecialistTitle" placeholder="Название специалиста">
+            <textarea id="specialistDescription" placeholder="Описание специалиста"></textarea>
+            <input type="text" id="specialistPrice" placeholder="Цена услуги">
+            <button onclick="addSpecialist()">Добавить специалиста</button>
+            <button onclick="logout()">Выйти</button>
+        </div>
+    </main>
+
+    <script>
+        const CENTER_PHONE = '+7 (926) 484-02-48';
+        let specialists = JSON.parse(localStorage.getItem('specialists')) || {
+            logoped: { 
+                title: "Логопед", 
+                description: "Коррекция звукопроизношения и развитие речи", 
+                price: "1500₽/занятие"
+            },
+            defect: { 
+                title: "Логопед-дефектолог", 
+                description: "Работа с различными речевыми нарушениями", 
+                price: "1700₽/занятие"
+            },
+            masaj: { 
+                title: "Массажист", 
+                description: "Лечебный и профилактический массаж", 
+                price: "2000₽/сеанс"
+            },
+            nero: { 
+                title: "Нейропсихолог", 
+                description: "Коррекция когнитивных функций", 
+                price: "1800₽/сеанс"
+            }
+        };
+
+        function saveData() {
+            localStorage.setItem('specialists', JSON.stringify(specialists));
+        }
+
+        function renderSpecialists() {
+            const container = document.getElementById('specialistContainer');
+            container.innerHTML = '';
+            
+            for (const [id, specialist] of Object.entries(specialists)) {
+                const card = document.createElement('div');
+                card.className = 'specialist-card';
+                card.innerHTML = `
+                    <h2>${specialist.title}</h2>
+                    <p>${specialist.description}</p>
+                    <p class="price">${specialist.price}</p>
+                    <button onclick="showPhoneNumber()" class="appointment-btn">Записаться на приём</button>
+                    ${document.getElementById('adminPanel').style.display === 'block' ? 
+                        `<button onclick="deleteSpecialist('${id}')" class="delete-btn">Удалить</button>` : ''}
+                `;
+                container.appendChild(card);
+            }
+        }
+
+        function showAdminPanel() {
+            const password = prompt("Введите пароль администратора:");
+            if (password === "admin123") {
+                document.getElementById('adminPanel').style.display = 'block';
+                renderSpecialists();
+            } else {
+                alert("Неверный пароль!");
+            }
+        }
+
+        function logout() {
+            document.getElementById('adminPanel').style.display = 'none';
+            renderSpecialists();
+        }
+
+        function addSpecialist() {
+            const title = document.getElementById('newSpecialistTitle').value.trim();
+            const description = document.getElementById('specialistDescription').value.trim();
+            const price = document.getElementById('specialistPrice').value.trim();
+            
+            if (!title || !description || !price) {
+                alert('Заполните все поля!');
+                return;
+            }
+
+            const newId = 'spec_' + Date.now();
+            specialists[newId] = { title, description, price };
+            saveData();
+            renderSpecialists();
+            alert('Специалист успешно добавлен!');
+            
+            document.getElementById('newSpecialistTitle').value = '';
+            document.getElementById('specialistDescription').value = '';
+            document.getElementById('specialistPrice').value = '';
+        }
+
+        function deleteSpecialist(id) {
+            if (confirm('Вы уверены что хотите удалить специалиста?')) {
+                delete specialists[id];
+                saveData();
+                renderSpecialists();
+            }
+        }
+
+        function showPhoneNumber() {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <span class="close-btn" onclick="this.parentElement.parentElement.remove()">&times;</span>
+                    <h3>Запись на приём</h3>
+                    <p>Позвоните нам:</p>
+                    <a href="tel:${CENTER_PHONE}" style="color: #ffd700; font-size: 1.5em; text-decoration: none;">
+                        ${CENTER_PHONE}
+                    </a>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.style.display = 'block';
+        }
+
+        renderSpecialists();
+        document.body.innerHTML += '<button onclick="showAdminPanel()" style="position: fixed; bottom: 20px; right: 20px; background: #ffd700; color: #1a1a2e; padding: 10px 20px; border-radius: 25px; border: none; cursor: pointer;">Администрирование</button>';
+    </script>
+</body>
+</html>
