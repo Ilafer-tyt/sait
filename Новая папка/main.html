@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Книжный магазин LindBook</title>
+    <style>
+        /* Общие стили */
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #2e1a1a, #3e1621);
+            color: #fff;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        nav ul {
+            padding: 0;
+            list-style-type: none;
+            margin: 20px 0;
+        }
+
+        nav ul li {
+            display: inline;
+            margin: 0 20px;
+        }
+
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        nav ul li a:hover {
+            color: #ffd700;
+        }
+
+        /* Стили для главной страницы */
+        .hero-section {
+            text-align: center;
+            padding: 100px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            margin: 50px 0;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            padding: 50px 20px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 15px 40px;
+            background: #c62828;
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            margin-top: 30px;
+            transition: background 0.3s ease;
+        }
+
+        .cta-button:hover {
+            background: #b71c1c;
+        }
+
+        .about-section {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 0 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>LindBook — Ваш мир литературы</h1>
+        <nav>
+            <ul>
+                <li><a href="о нас.html">О нас</a></li>
+                <li><a href="каталог.html">Каталог</a></li>
+                <li><a href="контакты.html">Контакты</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="hero-section">
+        <h2>Добро пожаловать в мир книг</h2>
+        <p>Большой выбор литературы на любой вкус</p>
+        <a href="каталог.html" class="cta-button">Перейти в каталог</a>
+    </div>
+
+    <div class="features">
+        <div class="feature-card">
+            <h3>📚 10 000 книг</h3>
+            <p>Самая большая коллекция в регионе</p>
+        </div>
+        
+        <div class="feature-card">
+            <h3>📖 20 категорий</h3>
+            <p>От классики до современных бестселлеров</p>
+        </div>
+        
+        <div class="feature-card">
+            <h3>🎁 Скидки до 50%</h3>
+            <p>Специальные предложения каждый день</p>
+        </div>
+    </div>
+
+    <div class="about-section">
+        <h2>О нашем магазине</h2>
+        <p>LindBook — это крупнейший онлайн-магазин литературы с широким ассортиментом книг различных жанров. Мы предлагаем как новинки, так и классические произведения с доставкой по всей стране.</p>
+    </div>
+
+    <footer style="text-align: center; padding: 20px; background: rgba(0,0,0,0.5);">
+        <p>© 2023 Книжный магазин LindBook. Все права защищены.</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>О нас - LindBook</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #2e1a1a, #3e1621);
+            color: #fff;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            color: #ffd700;
+        }
+
+        nav ul {
+            padding: 0;
+            list-style-type: none;
+            margin: 20px 0;
+        }
+
+        nav ul li {
+            display: inline;
+            margin: 0 20px;
+        }
+
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        nav ul li a:hover {
+            color: #ffd700;
+        }
+
+        .about-content {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .mission-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            transition: transform 0.3s ease;
+        }
+
+        .mission-section:hover {
+            transform: translateY(-5px);
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .team-member {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .team-member:hover {
+            transform: scale(1.05);
+        }
+
+        .reviews-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+        }
+
+        .review-form input,
+        .review-form textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 2px solid #ffd700;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        .review-form button {
+            background: #c62828;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .review-form button:hover {
+            background: #b71c1c;
+        }
+
+        .reviews-list {
+            margin-top: 30px;
+        }
+
+        .review-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .delete-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .delete-btn:hover {
+            background: #cc0000;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>О нашем магазине</h1>
+        <nav>
+            <ul>
+                <li><a href="main.html">Главная</a></li>
+                <li><a href="каталог.html">Каталог</a></li>
+                <li><a href="контакты.html">Контакты</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="about-content">
+        <div class="mission-section">
+            <h2>Наша миссия</h2>
+            <p>Мы создаем мир, где каждая книга находит своего читателя, а каждый читатель - свою идеальную книгу.</p>
+        </div>
+
+        <div class="team-grid">
+            <div class="team-member">
+                <h3>Основатель магазина</h3>
+                <p>Анна Литературова</p>
+                <p>Эксперт в области современной прозы</p>
+            </div>
+            <div class="team-member">
+                <h3>Главный библиотекарь</h3>
+                <p>Иван Книжников</p>
+                <p>Специалист по редким изданиям</p>
+            </div>
+        </div>
+
+        <div class="reviews-container">
+            <h2>Отзывы наших клиентов</h2>
+            <form class="review-form" id="reviewForm">
+                <input type="text" id="reviewName" placeholder="Ваше имя" required>
+                <textarea id="reviewText" placeholder="Ваш отзыв о книгах" rows="4" required></textarea>
+                <button type="submit">Отправить отзыв</button>
+            </form>
+
+            <div style="text-align: center; margin-top: 20px;">
+                <button onclick="showAdminPanel()" style="background: #ffd700; color: #2e1a1a;">
+                    Администрирование
+                </button>
+            </div>
+
+            <div class="reviews-list" id="reviewsList"></div>
+        </div>
+    </div>
+
+    <footer style="text-align: center; padding: 20px; background: rgba(0,0,0,0.5);">
+        <p>© 2023 Книжный магазин LindBook. Все права защищены.</p>
+    </footer>
+
+    <script>
+        let reviews = JSON.parse(localStorage.getItem('reviews')) || [];
+        let isAdmin = false;
+
+        function displayReviews() {
+            const container = document.getElementById('reviewsList');
+            container.innerHTML = '';
+            
+            reviews.forEach((review) => {
+                const reviewHTML = `
+                    <div class="review-item" data-id="${review.id}">
+                        <h3>${review.name}</h3>
+                        <p>${review.text}</p>
+                        ${isAdmin ? `
+                            <button onclick="deleteReview('${review.id}')" class="delete-btn">
+                                ❌ Удалить
+                            </button>` : ''}
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', reviewHTML);
+            });
+        }
+
+        document.getElementById('reviewForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('reviewName').value.trim();
+            const text = document.getElementById('reviewText').value.trim();
+            
+            if (name && text) {
+                reviews.push({
+                    id: Date.now().toString(),
+                    name: name,
+                    text: text,
+                    date: new Date().toISOString()
+                });
+                localStorage.setItem('reviews', JSON.stringify(reviews));
+                displayReviews();
+                this.reset();
+            }
+        });
+
+        function deleteReview(id) {
+            if (!isAdmin) {
+                alert('Доступ запрещен!');
+                return;
+            }
+            reviews = reviews.filter(review => review.id !== id);
+            localStorage.setItem('reviews', JSON.stringify(reviews));
+            displayReviews();
+        }
+
+        function showAdminPanel() {
+            if (isAdmin) {
+                isAdmin = false;
+                displayReviews();
+                alert('Вы вышли из админ-панели');
+                return;
+            }
+
+            const password = prompt('Введите пароль админа:');
+            if (password === 'admin123') { 
+                isAdmin = true;
+                displayReviews();
+                alert('Админ-доступ активирован!');
+            } else {
+                alert('Неверный пароль!');
+            }
+        }
+
+        displayReviews();
+    </script>
+</body>
+<!-- В секцию adminPanel в каталог.html добавьте кнопку: -->
+<button onclick="generateReport()">Скачать отчет</button>
+// В секцию script файла каталог.html добавьте:
+<script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.7.0/docx.min.js"></script>
+<script>
+function generateReport() {
+    const doc = new docx.Document();
+    
+    // Заголовок отчета
+    const title = new docx.Paragraph({
+        text: "Отчет по книгам LindBook",
+        heading: docx.HeadingLevel.HEADING_1,
+        alignment: docx.AlignmentType.CENTER
+    });
+
+    // Таблица с данными
+    const table = new docx.Table({
+        rows: [],
+        width: { size: 100, type: docx.WidthType.PERCENTAGE }
+    });
+
+    // Заголовки таблицы
+    table.addRow(new docx.TableRow({
+        children: [
+            new docx.TableCell({ children: [new docx.Paragraph("Название")] }),
+            new docx.TableCell({ children: [new docx.Paragraph("Автор")] }),
+            new docx.TableCell({ children: [new docx.Paragraph("Жанр")] }),
+            new docx.TableCell({ children: [new docx.Paragraph("Цена")] }),
+            new docx.TableCell({ children: [new docx.Paragraph("Наличие")] })
+        ]
+    }));
+
+    // Данные книг
+    Object.values(books).forEach(book => {
+        table.addRow(new docx.TableRow({
+            children: [
+                new docx.TableCell({ children: [new docx.Paragraph(book.title)] }),
+                new docx.TableCell({ children: [new docx.Paragraph(book.author)] }),
+                new docx.TableCell({ children: [new docx.Paragraph(book.genre)] }),
+                new docx.TableCell({ children: [new docx.Paragraph(book.price)] }),
+                new docx.TableCell({ children: [new docx.Paragraph(book.availability)] })
+            ]
+        }));
+    });
+
+    doc.addSection({
+        children: [title, table]
+    });
+
+    // Генерация и сохранение файла
+    docx.Packer.toBlob(doc).then(blob => {
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `Книжный_отчет_${new Date().toLocaleDateString()}.docx`;
+        link.click();
+        URL.revokeObjectURL(link.href);
+    });
+}
+</script>
+</html>

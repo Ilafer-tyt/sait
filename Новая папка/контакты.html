@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Контакты - LindBook</title>
+    <style>
+        /* Обновленные стили для книжного магазина */
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #2e1a1a, #3e1621);
+            color: #fff;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            color: #ffd700;
+        }
+
+        /* Остальные стили оставляем без изменений */
+        /* ... (остальная часть CSS остается такой же) ... */
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Контактная информация</h1>
+        <nav>
+            <ul>
+                <li><a href="main.html">Главная</a></li>
+                <li><a href="о нас.html">О нас</a></li>
+                <li><a href="каталог.html">Каталог</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="contacts-container">
+        <div class="contact-cards">
+            <div class="contact-card">
+                <div class="contact-icon">📍</div>
+                <h3>Адрес магазина</h3>
+                <p>г. Солнечногорск, Московская область</p>
+                <p>ул. Книжная, д. 10</p>
+            </div>
+
+            <div class="contact-card">
+                <div class="contact-icon">📞</div>
+                <h3>Телефоны</h3>
+                <p>+7 (495) 123-45-67</p>
+                <p>+7 (925) 765-43-21</p>
+            </div>
+
+            <div class="contact-card">
+                <div class="contact-icon">✉️</div>
+                <h3>Электронная почта</h3>
+                <p>info@lindbook.ru</p>
+                <p>support@lindbook.ru</p>
+            </div>
+        </div>
+
+        <div class="map-container">
+            <iframe 
+                src="https://yandex.ru/map-widget/v1/?um=constructor%3Anew-constructor-id"
+                width="100%" 
+                height="400" 
+                frameborder="0"
+                style="border:0;"
+                allowfullscreen>
+            </iframe>
+        </div>
+
+        <div class="contact-form">
+            <h2 style="text-align: center; margin-bottom: 25px; color: #ffd700;">Оставьте заявку</h2>
+            <form id="feedbackForm">
+                <div class="input-group">
+                    <span class="input-icon">👤</span>
+                    <input type="text" id="name" placeholder="Ваше имя" required>
+                </div>
+                
+                <div class="input-group">
+                    <span class="input-icon">📧</span>
+                    <input type="email" id="email" placeholder="Ваш email" required>
+                </div>
+        
+                <div class="input-group">
+                    <span class="input-icon">💬</span>
+                    <textarea id="message" placeholder="Ваш вопрос о книгах или заказе" rows="4" required></textarea>
+                </div>
+        
+                <div style="text-align: center;">
+                    <button type="submit">
+                        <span class="button-icon">✉️</span>
+                        Отправить сообщение
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer style="text-align: center; padding: 20px; background: rgba(0,0,0,0.5);">
+        <p>© 2023 Книжный магазин LindBook. Все права защищены.</p>
+    </footer>
+
+    <!-- Скрипт остается без изменений -->
+    <script>
+        document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const botToken = '8107951588:AAFDIgcNcFcVTsrNJYq6bHTim4bO9GCgyeU';
+            const chatId = '2105392986';
+            
+            const text = `Новое сообщение:\nИмя: ${document.getElementById('name').value}\nEmail: ${document.getElementById('email').value}\nСообщение: ${document.getElementById('message').value}`;
+        
+            fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    chat_id: chatId,
+                    text: text
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Сообщение отправлено!');
+                    document.getElementById('feedbackForm').reset();
+                } else {
+                    response.json().then(data => alert(`Ошибка: ${data.description}`));
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                alert('Ошибка отправки сообщения');
+            });
+        });
+        // ... (исходный JavaScript код) ...
+    </script>
+</body>
+</html>

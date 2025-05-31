@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Книжный магазин - Каталог</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #2e1a1a, #3e1616);
+            color: #fff;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        nav ul {
+            padding: 0;
+            list-style-type: none;
+            margin: 20px 0;
+        }
+
+        nav ul li {
+            display: inline;
+            margin: 0 20px;
+        }
+
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        nav ul li a:hover {
+            color: #ffd700;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .book-card {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .book-card h2 {
+            color: #ffd700;
+            margin-top: 0;
+        }
+
+        .price {
+            font-weight: bold;
+            color: #4caf50;
+        }
+
+        .availability {
+            color: #00bcd4;
+            font-style: italic;
+        }
+
+        #adminPanel {
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .delete-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .delete-btn:hover {
+            background: #cc0000;
+            transform: scale(1.05);
+        }
+
+        .buy-btn {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .buy-btn:hover {
+            background: #45a049;
+            transform: scale(1.05);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: relative;
+            background: #2e1a1a;
+            margin: 15% auto;
+            padding: 20px;
+            width: 70%;
+            max-width: 400px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .close-btn {
+            position: absolute;
+            right: 15px;
+            top: 10px;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        input, textarea {
+            display: block;
+            margin: 10px 0;
+            padding: 8px;
+            width: 100%;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid #444;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Наши книги</h1>
+        <nav>
+            <nav>
+            <ul>
+                <li><a href="main.html">Главная</a></li>
+                <li><a href="о нас.html">О нас</a></li>
+                <li><a href="контакты.html">Контакты</a></li>
+            </ul>
+        </nav>
+        </nav>
+    </header>
+
+    <main>
+        <div id="bookContainer"></div>
+        
+        <div id="adminPanel">
+            <h2>Панель администратора</h2>
+            <input type="text" id="bookTitle" placeholder="Название книги">
+            <input type="text" id="bookAuthor" placeholder="Автор">
+            <input type="text" id="bookGenre" placeholder="Жанр">
+            <input type="text" id="bookPrice" placeholder="Цена">
+            <select id="bookAvailability">
+                <option value="В наличии">В наличии</option>
+                <option value="Под заказ">Под заказ</option>
+            </select>
+            <button onclick="addBook()">Добавить книгу</button>
+            <button onclick="logout()">Выйти</button>
+        </div>
+    </main>
+
+<script>
+    const STORE_PHONE = '+7 (926) 484-02-48';
+    let books = JSON.parse(localStorage.getItem('books')) || {
+        book1: { 
+            title: "Мастер и Маргарита", 
+            author: "Михаил Булгаков",
+            genre: "Роман",
+            price: "1200₽",
+            availability: "В наличии"
+        },
+        book2: { 
+            title: "1984", 
+            author: "Джордж Оруэлл",
+            genre: "Антиутопия",
+            price: "950₽",
+            availability: "В наличии"
+        }
+    };
+
+    function saveData() {
+        localStorage.setItem('books', JSON.stringify(books));
+    }
+
+    function renderBooks() {
+        const container = document.getElementById('bookContainer');
+        container.innerHTML = '';
+        
+        for (const [id, book] of Object.entries(books)) {
+            const card = document.createElement('div');
+            card.className = 'book-card';
+            card.innerHTML = `
+                <h2>${book.title}</h2>
+                <p>Автор: ${book.author}</p>
+                <p>Жанр: ${book.genre}</p>
+                <p class="price">${book.price}</p>
+                <p class="availability">${book.availability}</p>
+                <button onclick="showContacts()" class="buy-btn">Купить</button>
+                ${document.getElementById('adminPanel').style.display === 'block' ? 
+                    `<button onclick="deleteBook('${id}')" class="delete-btn">Удалить</button>` : ''}
+            `;
+            container.appendChild(card);
+        }
+    }
+
+    function showAdminPanel() {
+        const password = prompt("Введите пароль администратора:");
+        if (password === "admin123") {
+            document.getElementById('adminPanel').style.display = 'block';
+            renderBooks();
+        } else {
+            alert("Неверный пароль!");
+        }
+    }
+
+    function logout() {
+        document.getElementById('adminPanel').style.display = 'none';
+        renderBooks();
+    }
+
+    function addBook() {
+        const title = document.getElementById('bookTitle').value.trim();
+        const author = document.getElementById('bookAuthor').value.trim();
+        const genre = document.getElementById('bookGenre').value.trim();
+        const price = document.getElementById('bookPrice').value.trim();
+        const availability = document.getElementById('bookAvailability').value;
+        
+        if (!title || !author || !genre || !price) {
+            alert('Заполните все обязательные поля!');
+            return;
+        }
+
+        const newId = 'book_' + Date.now();
+        books[newId] = { title, author, genre, price, availability };
+        saveData();
+        renderBooks();
+        alert('Книга успешно добавлена!');
+        
+        document.getElementById('bookTitle').value = '';
+        document.getElementById('bookAuthor').value = '';
+        document.getElementById('bookGenre').value = '';
+        document.getElementById('bookPrice').value = '';
+    }
+
+    function deleteBook(id) {
+        if (confirm('Вы уверены что хотите удалить книгу?')) {
+            delete books[id];
+            saveData();
+            renderBooks();
+        }
+    }
+
+    function showContacts() {
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <span class="close-btn" onclick="this.parentElement.parentElement.remove()">&times;</span>
+                <h3>Оформление заказа</h3>
+                <p>Для заказа позвоните нам:</p>
+                <a href="tel:${STORE_PHONE}" style="color: #ffd700; font-size: 1.5em; text-decoration: none;">
+                    ${STORE_PHONE}
+                </a>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        modal.style.display = 'block';
+    }
+
+    renderBooks();
+    document.body.innerHTML += '<button onclick="showAdminPanel()" style="position: fixed; bottom: 20px; right: 20px; background: #ffd700; color: #2e1a1a; padding: 10px 20px; border-radius: 25px; border: none; cursor: pointer;">Администрирование</button>';
+</script>
+<!-- Добавьте этот код в ваш каталог.html -->
+<button id="exportBtn" class="cta-button" style="margin: 20px auto; display: block;">
+    📥 Выгрузить отчёт в Excel
+</button>
+
+<div id="booksContainer" class="features"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+<script>
+// Инициализация хранилища
+function initStorage() {
+  if (!localStorage.getItem('books')) {
+    const initialBooks = [
+      {
+        id: 1,
+        title: "1984",
+        author: "Джордж Оруэлл",
+        category: "Антиутопия",
+        price: 450,
+        discount: 10,
+        isbn: "978-5-17-090823-3"
+      },
+      {
+        id: 2,
+        title: "Преступление и наказание",
+        author: "Ф.М. Достоевский",
+        category: "Классика",
+        price: 380,
+        discount: 5,
+        isbn: "978-5-04-112140-0"
+      }
+    ];
+    localStorage.setItem('books', JSON.stringify(initialBooks));
+  }
+}
+
+// Загрузка и отображение книг
+function loadBooks() {
+  const books = JSON.parse(localStorage.getItem('books')) || [];
+  const container = document.getElementById('booksContainer');
+  container.innerHTML = '';
+
+  books.forEach(book => {
+    const html = `
+      <div class="feature-card">
+        <h3>${book.title}</h3>
+        <p>Автор: ${book.author}</p>
+        <p>Категория: ${book.category}</p>
+        <p>Цена: ${book.price} руб.</p>
+        ${book.discount ? `<p>Скидка: ${book.discount}%</p>` : ''}
+      </div>
+    `;
+    container.innerHTML += html;
+  });
+}
+
+// Экспорт в Excel
+function exportToExcel() {
+  const books = JSON.parse(localStorage.getItem('books')) || [];
+  
+  const data = books.map(book => ({
+    "Название": book.title,
+    "Автор": book.author,
+    "Категория": book.category,
+    "Цена": book.price,
+    "Скидка (%)": book.discount || 0,
+    "ISBN": book.isbn || ''
+  }));
+
+  const ws = XLSX.utils.json_to_sheet(data);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Книги");
+  XLSX.writeFile(wb, 'lindbook_report.xlsx');
+}
+
+// Инициализация при загрузке страницы
+document.addEventListener('DOMContentLoaded', () => {
+  initStorage();
+  loadBooks();
+  
+  document.getElementById('exportBtn').addEventListener('click', exportToExcel);
+});
+
+// Функция для добавления новой книги (пример)
+function addBook(title, author, category, price, discount, isbn) {
+  const books = JSON.parse(localStorage.getItem('books')) || [];
+  const newBook = {
+    id: books.length + 1,
+    title,
+    author,
+    category,
+    price,
+    discount: discount || 0,
+    isbn: isbn || ''
+  };
+  books.push(newBook);
+  localStorage.setItem('books', JSON.stringify(books));
+  loadBooks();
+}
+</script>
+
+
+</body>
+</html>
